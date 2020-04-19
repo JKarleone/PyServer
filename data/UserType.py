@@ -1,17 +1,17 @@
 from peewee import *
 from data.Data import *
+from data.User import *
 
 
-# TODO: create this table #3
+# TODO: create this table
 class UserType(Data):
     id = AutoField()
-    user_id = IntegerField()
-    # TODO: change user_id type to ForeignKeyField(User) when User will be added
+    user_id = ForeignKeyField(User)
     type = CharField()
 
     @staticmethod
-    def add(user_id, type):
-        if type != "Moderator" or "Admin" or "User":
+    def add(user_id, type_name):
+        if type_name != "Moderator" or "Admin" or "User":
             print('Wrong user type name')
             return
 
@@ -19,7 +19,7 @@ class UserType(Data):
             print('User has already get his own type')
             return
 
-        UserType.create(user_id=user_id, type=type)
+        UserType.create(user_id=user_id, type=type_name)
 
     @staticmethod
     def remove_by_id(user_id):
@@ -31,8 +31,10 @@ class UserType(Data):
 
     @staticmethod
     def change_type_by_id(user_id, new_type):
-        if new_type != "Moderator" or "Admin" or "User":
+        if new_type != ("Moderator" or "Admin" or "User"):
             print('Wrong user type name')
             return
 
-        # TODO: check right update func
+        current_user = UserType.select().where(UserType.user_id == user_id).get()
+        current_user.type = new_type
+        current_user.save()

@@ -21,7 +21,7 @@ class Person(Data):
 
     @staticmethod
     def remove_by_id(person_id):
-        if not Person.select().where(Person.id == person_id).exists():
+        if not Person.exist(person_id):
             print('This person doesn\'t exist')
             return
 
@@ -30,3 +30,7 @@ class Person(Data):
     @staticmethod
     def get_all():
         return Person.select()
+
+    @staticmethod
+    def exist(person_id):
+        return Person.select().where(Person.id == person_id).exists()

@@ -2,7 +2,6 @@ from peewee import *
 from data.Data import *
 
 
-# TODO: create this table #1
 class Genre(Data):
     id = AutoField()
     name = CharField()

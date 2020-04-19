@@ -1,5 +1,6 @@
 from peewee import *
 from data.Data import *
+from data.FilmToGenre import *
 
 
 # TODO: create this table
@@ -20,7 +21,8 @@ class Film(Data):
 
         Film.create(title=title, description=description, year=year)
 
-        # TODO: add all genres to sub table
+        for genre_id in genres_id:
+            FilmToGenre.create(film=Film.id, genre=genre_id)
 
     @staticmethod
     def remove_by_id(film_id):
@@ -28,10 +30,15 @@ class Film(Data):
             print('This film doesn\'t exist')
             return
 
-        Film.get(Film.id == film_id).delete_instance()
+        all_genres = FilmToGenre.select().where(FilmToGenre.film == Film.id).get()
+        all_genres.delete_instance()
 
-        # TODO: delete connected genres with this film in sub table
+        Film.get(Film.id == film_id).delete_instance()
 
     @staticmethod
     def get_all():
         return Film.select()
+
+    @staticmethod
+    def exist(film_id):
+        return Film.select().where(Film.id == film_id).exists()
