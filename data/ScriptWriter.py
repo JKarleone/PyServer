@@ -12,8 +12,18 @@ class ScriptWriter(Data):
 
     @staticmethod
     def add(person_id, film_id):
-        ScriptWriter.create(person=person_id, film=film_id)
+        error_message = ''
+        try:
+            ScriptWriter.create(person=person_id, film=film_id)
+        except DatabaseError:
+            error_message = "Can't create scriptwriter!\nWrong person id or film id"
+        return error_message
 
     @staticmethod
-    def remove_by_id(producer_id):
-        ScriptWriter.get(ScriptWriter.id == producer_id).delete_instance()
+    def remove_by_id(scriptwriter_id):
+        error_message = ''
+        try:
+            ScriptWriter.get(ScriptWriter.id == scriptwriter_id).delete_instance()
+        except DatabaseError:
+            error_message = "Can't delete producer"
+        return error_message

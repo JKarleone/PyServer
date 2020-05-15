@@ -17,14 +17,24 @@ class FilmScoreByUser(Data):
 
     @staticmethod
     def remove_by_id(user_id, film_id):
-        FilmScoreByUser.get(FilmScoreByUser.user == user_id,
-                            FilmScoreByUser.film == film_id).delete_instance()
+        error_message = ""
+        try:
+            FilmScoreByUser.get(FilmScoreByUser.user == user_id,
+                                FilmScoreByUser.film == film_id).delete_instance()
+        except DatabaseError:
+            error_message = "Can't delete user score!\nWrong user_id or film_id!"
+        return error_message
 
     @staticmethod
     def change_by_id(user_id, film_id, new_score):
-        record = FilmScoreByUser.get(user=user_id, film=film_id)
-        record.score = new_score
-        record.save()
+        error_message = ""
+        try:
+            record = FilmScoreByUser.get(user=user_id, film=film_id)
+            record.score = new_score
+            record.save()
+        except DatabaseError:
+            error_message = "Can't update user score!\nWrong user_id or film_id!"
+        return error_message
 
     @staticmethod
     def get_all():

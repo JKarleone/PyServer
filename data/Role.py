@@ -15,11 +15,13 @@ class Role(Data):
 
     @staticmethod
     def remove_by_id(role_id):
+        error_message = ''
         if not Role.exist(role_id):
-            print('This role doesn\'t exist')
-            return
+            error_message = 'This role doesn\'t exist'
+            return error_message
 
         Role.get(Role.id == role_id).delete_instance()
+        return error_message
 
     @staticmethod
     def exist(role_id):

@@ -7,30 +7,32 @@ class Person(Data):
     id = AutoField()
     name = CharField()
     birthday = DateField()
-    birthplace = CharField()
 
     @staticmethod
-    def add(name, birthday, birthplace):
-        if Person.select().where(Person.name == name and
-                                 Person.birthday == birthday and
-                                 Person.birthplace == birthplace).exists():
-            print('This person has already been added')
-            return
+    def add(name, birthday):
+        error_message = ''
+        if Person.exists(name, birthday):
+            error_message = 'This person has already been added'
+            return error_message
 
-        Person.create(name=name, birthday=birthday, birthplace=birthplace)
+        Person.create(name=name, birthday=birthday)
+        return error_message
 
     @staticmethod
     def remove_by_id(person_id):
+        error_message = ''
         if not Person.exist(person_id):
-            print('This person doesn\'t exist')
-            return
+            error_message = 'This person doesn\'t exist'
+            return error_message
 
         Person.get(Person.id == person_id).delete_instance()
+        return error_message
 
     @staticmethod
     def get_all():
         return Person.select()
 
     @staticmethod
-    def exist(person_id):
-        return Person.select().where(Person.id == person_id).exists()
+    def exists(name, birthday):
+        return Person.select().where(Person.name == name and
+                                     Person.birthday == birthday).exists()

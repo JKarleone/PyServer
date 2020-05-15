@@ -12,8 +12,18 @@ class Producer(Data):
 
     @staticmethod
     def add(person_id, film_id):
-        Producer.create(person=person_id, film=film_id)
+        error_message = ''
+        try:
+            Producer.create(person=person_id, film=film_id)
+        except DatabaseError:
+            error_message = "Can't create new producer! Wrong person or film id"
+        return error_message
 
     @staticmethod
     def remove_by_id(producer_id):
-        Producer.get(Producer.id == producer_id).delete_instance()
+        error_message = ''
+        try:
+            Producer.get(Producer.id == producer_id).delete_instance()
+        except DatabaseError:
+            error_message = "Can't delete producer! Wrong producer id"
+        return error_message

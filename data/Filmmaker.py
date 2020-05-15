@@ -12,8 +12,18 @@ class Filmmaker(Data):
 
     @staticmethod
     def add(person_id, film_id):
-        Filmmaker.create(person=person_id, film=film_id)
+        error_message = ''
+        try:
+            Filmmaker.create(person=person_id, film=film_id)
+        except DatabaseError:
+            error_message = "Can't create new filmmaker! Wrong person or film id"
+        return error_message
 
     @staticmethod
-    def remove_by_id(producer_id):
-        Filmmaker.get(Filmmaker.id == producer_id).delete_instance()
+    def remove_by_id(filmmaker_id):
+        error_message = ''
+        try:
+            Filmmaker.get(Filmmaker.id == filmmaker_id).delete_instance()
+        except DatabaseError:
+            error_message = "Can't delete filmmaker! Wrong filmmaker id"
+        return error_message
