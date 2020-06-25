@@ -1,9 +1,7 @@
 from peewee import *
 from data.Data import *
-from data.FilmToGenre import *
 
 
-# TODO: create this table
 class Film(Data):
     id = AutoField()
     title = CharField()
@@ -12,7 +10,7 @@ class Film(Data):
     score = FloatField()
 
     @staticmethod
-    def add(title, description, year, genres_id):
+    def add(title, description, year):
         error_message = ''
         if Film.select().where(Film.title == title and
                                Film.description == description and
@@ -22,8 +20,6 @@ class Film(Data):
 
         Film.create(title=title, description=description, year=year)
 
-        for genre_id in genres_id:
-            FilmToGenre.create(film=Film.id, genre=genre_id)
         return error_message
 
     @staticmethod
@@ -32,9 +28,6 @@ class Film(Data):
         if not Film.select().where(Film.id == film_id).exists():
             error_message = 'This film doesn\'t exist'
             return error_message
-
-        all_genres = FilmToGenre.select().where(FilmToGenre.film == Film.id).get()
-        all_genres.delete_instance()
 
         Film.get(Film.id == film_id).delete_instance()
         return error_message

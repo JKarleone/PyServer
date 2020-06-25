@@ -1,28 +1,24 @@
 from peewee import *
 from data.Data import *
+from data.UserType import *
 
 
-# TODO: create this table
 class User(Data):
     id = AutoField()
     login = CharField()
     password = CharField()
-    email = CharField()
     name = CharField()
+    usertype_id = ForeignKeyField(UserType)
 
     @staticmethod
-    def add(login, password, email, name):
+    def add(login, password, name, usertype_id):
         error_message = ''
         if User.select().where(User.login == login).exists():
             error_message = 'This login is already used by another user'
             return error_message
 
-        if User.select().where(User.email == email).exists():
-            error_message = 'User with this email is already registered'
-            return error_message
-
         User.create(login=login, password=password,
-                    email=email, name=name)
+                    name=name, usertype_id=usertype_id)
         return error_message
 
     @staticmethod
@@ -32,10 +28,14 @@ class User(Data):
             error_message = "User with this id doesn't exist"
             return error_message
 
-        # TODO: add deleting other connected rows in sub tables
         User.get(User.id == user_id).delete_instance()
 
         return error_message
+
+    @staticmethod
+    def auth(login, password):
+        return User.select().where(User.login == login and
+                                   User.password == password).exists()
 
     @staticmethod
     def get_all():

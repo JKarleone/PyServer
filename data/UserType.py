@@ -3,7 +3,6 @@ from data.Data import *
 from data.User import *
 
 
-# TODO: create this table
 class UserType(Data):
     id = AutoField()
     user_id = ForeignKeyField(User)

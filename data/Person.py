@@ -2,20 +2,18 @@ from peewee import *
 from data.Data import *
 
 
-# TODO: create this table #2
 class Person(Data):
     id = AutoField()
     name = CharField()
-    birthday = DateField()
 
     @staticmethod
-    def add(name, birthday):
+    def add(name):
         error_message = ''
-        if Person.exists(name, birthday):
+        if Person.exists(name):
             error_message = 'This person has already been added'
             return error_message
 
-        Person.create(name=name, birthday=birthday)
+        Person.create(name=name)
         return error_message
 
     @staticmethod
@@ -33,6 +31,5 @@ class Person(Data):
         return Person.select()
 
     @staticmethod
-    def exists(name, birthday):
-        return Person.select().where(Person.name == name and
-                                     Person.birthday == birthday).exists()
+    def exists(name):
+        return Person.select().where(Person.name == name).exists()
