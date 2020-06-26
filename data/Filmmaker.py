@@ -27,3 +27,8 @@ class Filmmaker(Data):
         except DatabaseError:
             error_message = "Can't delete filmmaker! Wrong filmmaker id"
         return error_message
+
+    @staticmethod
+    def get_name_by_film(film):
+        query = Filmmaker.select().where(Filmmaker.film == film)
+        return query[0].person.name

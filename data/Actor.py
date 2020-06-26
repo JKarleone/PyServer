@@ -12,13 +12,7 @@ class Actor(Data):
     @staticmethod
     def add(film_id, person_id):
         error_message = ''
-        if not Person.exist(person_id):
-            error_message = "This person doesn't exist"
-            return error_message
 
-        if not Film.exist(film_id):
-            error_message = "This film doesn't exist"
-            return error_message
         Actor.create(film=film_id, person=person_id)
         return error_message
 
@@ -30,3 +24,12 @@ class Actor(Data):
         except DatabaseError:
             error_message = "Can't delete actor! Wrong id"
         return error_message
+
+    @staticmethod
+    def get_names_by_film(film):
+        query = Actor.select().where(Actor.film == film)
+        actors = list()
+        for actor in query:
+            actors.append(actor.person.name)
+
+        return actors

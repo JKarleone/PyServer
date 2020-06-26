@@ -1,5 +1,6 @@
 from peewee import *
 from data.Data import *
+from data.User import *
 
 
 class Film(Data):
@@ -8,29 +9,28 @@ class Film(Data):
     description = TextField()
     year = SmallIntegerField()
     score = FloatField()
+    creator = ForeignKeyField(User)
 
     @staticmethod
-    def add(title, description, year):
-        error_message = ''
+    def add(title, description, year, creator_id):
         if Film.select().where(Film.title == title and
                                Film.description == description and
                                Film.year == year).exists():
-            error_message = 'This film has already been added'
-            return error_message
+            return 'already added'
 
-        Film.create(title=title, description=description, year=year)
+        Film.create(title=title, description=description,
+                    year=year, score=0.0, creator=creator_id)
 
-        return error_message
+        return ''
 
     @staticmethod
     def remove_by_id(film_id):
-        error_message = ''
         if not Film.select().where(Film.id == film_id).exists():
-            error_message = 'This film doesn\'t exist'
-            return error_message
+            return 'Film doesn\'t exist'
 
         Film.get(Film.id == film_id).delete_instance()
-        return error_message
+
+        return ''
 
     @staticmethod
     def get_all():
@@ -39,3 +39,13 @@ class Film(Data):
     @staticmethod
     def exist(film_id):
         return Film.select().where(Film.id == film_id).exists()
+
+    @staticmethod
+    def get_creator_login(creator_id):
+        query = User.select().where(User.id == creator_id)
+        return query[0].login
+
+    @staticmethod
+    def get_id_by_title(title: str):
+        query = Film.select().where(Film.title == title)
+        return query[0].id

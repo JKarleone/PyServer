@@ -5,41 +5,33 @@ from data.User import *
 
 class UserType(Data):
     id = AutoField()
-    user_id = ForeignKeyField(User)
-    type = CharField()
+    name = CharField()
 
     @staticmethod
-    def add(user_id, type_name):
+    def add(type_name):
         error_message = ''
-        if type_name != "Moderator" or "Admin" or "User":
-            error_message = 'Wrong user type name'
+
+        if UserType.select().where(UserType.name == type_name).exists():
+            error_message = 'Type is already exists'
             return error_message
 
-        if UserType.select().where(UserType.user_id == user_id).exists():
-            error_message = 'User has already get his own type'
-            return error_message
+        UserType.create(name=type_name)
 
-        UserType.create(user_id=user_id, type=type_name)
         return error_message
 
     @staticmethod
-    def remove_by_id(user_id):
+    def remove_by_name(type_name):
         error_message = ''
-        if not UserType.select().where(UserType.user_id == user_id).exists():
-            error_message = 'This user haven\'t got his own type'
+        if not UserType.select().where(UserType.name == type_name).exists():
+            error_message = 'This type doesn\'t exist!'
             return error_message
 
-        UserType.get(UserType.user_id == user_id).delete_instance()
         return error_message
 
     @staticmethod
-    def change_type_by_id(user_id, new_type):
-        error_message = ''
-        if new_type != ("Moderator" or "Admin" or "User"):
-            error_message = 'Wrong user type name'
-            return error_message
+    def count():
+        count = 0
+        for record in UserType.select():
+            count = count + 1
 
-        current_user = UserType.select().where(UserType.user_id == user_id).get()
-        current_user.type = new_type
-        current_user.save()
-        return error_message
+        return count

@@ -4,7 +4,6 @@ from data.Film import *
 from data.User import *
 
 
-# TODO: create this table
 class FilmScoreByUser(Data):
     id = BigAutoField()
     film = ForeignKeyField(Film)

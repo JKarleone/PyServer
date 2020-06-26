@@ -17,18 +17,9 @@ class Person(Data):
         return error_message
 
     @staticmethod
-    def remove_by_id(person_id):
-        error_message = ''
-        if not Person.exist(person_id):
-            error_message = 'This person doesn\'t exist'
-            return error_message
-
-        Person.get(Person.id == person_id).delete_instance()
-        return error_message
-
-    @staticmethod
-    def get_all():
-        return Person.select()
+    def get_id_by_name(name: str):
+        query = Person.select().where(Person.name == name)
+        return query[0].id
 
     @staticmethod
     def exists(name):
