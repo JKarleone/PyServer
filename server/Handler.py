@@ -34,8 +34,10 @@ class Handler:
         try:
             split_data = data.split('&')
             command = split_data[1]
-        except ValueError:
-            return 'bad method'
+        except IndexError:
+            return 'params error'
+        except:
+            return 'unknown error'
 
         if command == 'add':
             try:
@@ -117,8 +119,10 @@ class Handler:
             login = split_data[1]
             password = split_data[2]
             name = split_data[3]
-        except ValueError:
+        except IndexError:
             return 'params error'
+        except:
+            return 'unknown error'
 
         msg = User.add(login, password, name, 1)
 
@@ -135,8 +139,10 @@ class Handler:
             split_data = data.split('&')
             login = split_data[1]
             password = split_data[2]
-        except ValueError:
+        except IndexError:
             return 'params error'
+        except:
+            return 'unknown error'
 
         check = User.auth(login, password)
         return User.get_user_id_name(login, password) if check else 'auth error'
@@ -146,9 +152,10 @@ class Handler:
         try:
             split_data = data.split('&')
             method = split_data[1]
-
-        except ValueError:
+        except IndexError:
             return 'params error'
+        except:
+            return 'unknown error'
 
         # Example request:
         # score&set&5&123&title
@@ -157,8 +164,10 @@ class Handler:
                 score = int(split_data[2])
                 user_id = int(split_data[3])
                 title = split_data[4]
-            except ValueError:
+            except IndexError:
                 return 'params error'
+            except:
+                return 'unknown error'
 
             film_id = Film.get_id_by_title(title)
             FilmScoreByUser.set_score(film_id, user_id, score)
@@ -170,8 +179,10 @@ class Handler:
             try:
                 user_id = split_data[2]
                 title = split_data[3]
-            except ValueError:
+            except IndexError:
                 return 'params error'
+            except:
+                return 'unknown error'
 
             film_id = Film.get_id_by_title(title)
             query = FilmScoreByUser.select().where(FilmScoreByUser.user == user_id,
@@ -180,3 +191,5 @@ class Handler:
                 return str(0)
 
             return str(query[0].score)
+
+        return 'error'
