@@ -1,12 +1,5 @@
 import socketserver
-from Handler import *
-from data.User import User
-from data.UserType import UserType
-from data.Film import Film
-from data.FilmScoreByUser import FilmScoreByUser
-from data.Person import Person
-from data.Filmmaker import Filmmaker
-from data.Actor import Actor
+from server.Handler import *
 import threading
 
 
@@ -38,23 +31,12 @@ class TCPHandler(socketserver.BaseRequestHandler):
         self.request.sendall(answer.encode())
 
 
-# Main loop
-if __name__ == '__main__':
-    # Create tables if they're not exist
-    UserType.create_table()
-    User.create_table()
-    Person.create_table()
-    Film.create_table()
-    FilmScoreByUser.create_table()
-    Actor.create_table()
-    Filmmaker.create_table()
+class Server:
+    def start(self):
+        self.server = ThreadedTCPServer(('127.0.0.1', 8888), TCPHandler)
+        self.server_thread = threading.Thread(target=self.server.serve_forever)
+        self.server_thread.start()
+        print(self.server_thread.name)
 
-    if UserType.count() == 0:
-        UserType.add("User")
-        UserType.add("Admin")
-
-    server = ThreadedTCPServer(('127.0.0.1', 8888), TCPHandler)
-    server_thread = threading.Thread(target=server.serve_forever)
-    server_thread.start()
-
-    print(server_thread.name)
+    def stop(self):
+        self.server.shutdown()
