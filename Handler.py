@@ -2,6 +2,7 @@ from data.User import *
 from data.Film import *
 from data.Filmmaker import *
 from data.Actor import *
+from data.FilmScoreByUser import *
 
 
 class Handler:
@@ -66,7 +67,7 @@ class Handler:
                 Person.add(filmmaker)
                 Filmmaker.add(Person.get_id_by_name(filmmaker), Film.get_id_by_title(title))
 
-            return 'added' if msg == '' else msg
+            return 'ok' if msg == '' else msg
 
         if command == 'getall':
             ans = ''
@@ -85,7 +86,26 @@ class Handler:
                        Film.get_creator_login(film.creator) + '&' + actors_str + '&' + \
                        filmmaker + '\n'
 
+            print(ans)
             return ans
+
+        if command == 'delete':
+            try:
+                title = split_data[2]
+            except ValueError:
+                return 'params error'
+
+            film_id = Film.get_id_by_title(title)
+            q = Filmmaker.delete().where(Filmmaker.film == film_id)
+            q.execute()
+            q = Actor.delete().where(Actor.film == film_id)
+            q.execute()
+            q = FilmScoreByUser.delete().where(FilmScoreByUser.film == film_id)
+            q.execute()
+            q = Film.select().where(Film.id == film_id)
+            q[0].delete_instance()
+            return ''
+
 
 
     # Example request:
@@ -101,7 +121,11 @@ class Handler:
             return 'params error'
 
         msg = User.add(login, password, name, 1)
-        return 'ok' if msg == '' else msg
+
+        if msg == '':
+            q = User.select().where(User.login == login)
+            return str(q[0].id)
+        return msg
 
     # Example request:
     # auth&my_login&vTk34Fs6
@@ -119,4 +143,40 @@ class Handler:
 
     @staticmethod
     def score(data: str):
-        pass
+        try:
+            split_data = data.split('&')
+            method = split_data[1]
+
+        except ValueError:
+            return 'params error'
+
+        # Example request:
+        # score&set&5&123&title
+        if method == 'set':
+            try:
+                score = int(split_data[2])
+                user_id = int(split_data[3])
+                title = split_data[4]
+            except ValueError:
+                return 'params error'
+
+            film_id = Film.get_id_by_title(title)
+            FilmScoreByUser.set_score(film_id, user_id, score)
+            return ''
+
+        # Example request:
+        # score&get&2&title
+        if method == 'get':
+            try:
+                user_id = split_data[2]
+                title = split_data[3]
+            except ValueError:
+                return 'params error'
+
+            film_id = Film.get_id_by_title(title)
+            query = FilmScoreByUser.select().where(FilmScoreByUser.user == user_id,
+                                                   FilmScoreByUser.film == film_id)
+            if len(query) == 0:
+                return str(0)
+
+            return str(query[0].score)

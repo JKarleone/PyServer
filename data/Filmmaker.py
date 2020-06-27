@@ -31,4 +31,6 @@ class Filmmaker(Data):
     @staticmethod
     def get_name_by_film(film):
         query = Filmmaker.select().where(Filmmaker.film == film)
+        if len(query) == 0:
+            return ''
         return query[0].person.name
